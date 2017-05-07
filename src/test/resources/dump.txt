@@ -1,0 +1,117 @@
+keychain: "/Library/Keychains/System.keychain"
+version: 256
+class: 0x80001000
+attributes:
+    "alis"<blob>="Apple Worldwide Developer Relations Certification Authority"
+    "cenc"<uint32>=0x00000003
+    "ctyp"<uint32>=0x00000001
+    "hpky"<blob>=0x88271709A98608BECEBBAF64759C55254A3B7  "\210'\011\251\266\030`\213\354\272\366GY\305RT\243\267"
+    "issu"<blob>=0x3062310B3009060355040613025553011060355040A4150504C4520494E432E31263355040B131D4150504C452043455254494649434154494F4E20415554484F52495459311630140603550403130D4150504C4520524F4F54204341  "0b1\0130\011\006\003U\004\006\023\0030U\004\012\023\012APPLE INC.1&0$\006\003U\004\01335APPLE CERTIFICATION AUTHORITY1\0260\024\04\003\023\015APPLE ROOT CA"
+    "labl"<blob>="Apple Worldwide Developer Relations Certification Authority"
+    "skid"<blob>=0x88271A9B618608BECEBBAF64759CA3B7  "0'\027\011\251\266\030`\21353\272\366GY\305RT\243\267"
+    "snbr"<blob>=0x01DCC439010  "\036\274\3049m\240\020"
+    "subj"<blob>=0x30906035504061302555331133011060355040A0C0A4170706C6520496E632E312C3355040B0C234170706C6520576F726C647769646520446576656C6F7065722052656C6174696F6E733144304206035504030C3B4170706C6520576F726C64776960446576656C65722052656C6174696F6E7320436636174696F6E20417574686F779  "0\201\2261\0130\011\006\003U\004\006\023\002US1\6\003U\004\012\014\012Apple Inc.1,0*\006\003U\004\013\014#Apple Worldwide Developer Relations1D0B\006\003U\00014;Apple Worldwide Developer Relations Certification Authority"
+keychain: "/Library/Keychains/System.keychain"
+version: 256
+class: 0x80001000
+attributes:
+    "alis"<blob>="com.apple.systemdefault"
+    "cenc"<uint32>=0x00000003
+    "ctyp"<uint32>=0x00000001
+    "hpky"<blob>=0x4E8A409CF4152293029E29B06DBCA462  "N\212@\234\\32002\236)\260m\274\244b\225\272"
+    "issu"<blob>=0x303C3120301E060355047636F6D2E6170706C652E7356D64656661756C7431183016060355040A0C0F53797374656D204964656E7
+97479  "0<1 0\036\006\003U\004\003\017com.apple.systemdefault1\0300\026\006\0012\014\017System Identity"
+    "labl"<blob>="com.apple.systemdefault"
+    "skid"<blob>=<NULL>
+    "snbr"<blob>=0x2604B43F  "&\004\264?"
+    "subj"<blob>=0x303C3120301E0636F6D2E6170706C652E73797374656D64656661756C7431183016060355040F53797374656D2049647
+97479  "0<1 0\036\006\003U\004\003\0com.apple.systemdefault1\0300\06\003U\\017System Identity"
+keychain: "/Library/Keychains/System.keychain"
+version: 256
+class: "genp"
+attributes:
+    0x00000007 <blob>="My-Network"
+    0x00000008 <blob>=<NULL>
+    "acct"<blob>="My-Network"
+    "cdat"<timedate>=0x32303137303432363105310  "20170426180051Z\000"
+    "crtr"<uint32>=<NULL>
+    "cusi"<sint32>=<NULL>
+    "desc"<blob>="AirPort network password"
+    "gena"<blob>=<NULL>
+    "icmt"<blob>=<NULL>
+    "invi"<sint32>=<NULL>
+    "mdat"<timedate>=0x323031373034323631A00  "20170426180051Z\000"
+    "nega"<sint32>=<NULL>
+    "prot"<blob>=<NULL>
+    "scrp"<sint32>=<NULL>
+    "svce"<blob>="AirPort"
+    "type"<uint32>=<NULL>
+keychain: "/Library/Keychains/login.keychain"
+version: 256
+class: "inet"
+attributes:
+    0x00000007 <blob>="mylogin.com"
+    0x00000008 <blob>=<NULL>
+    "acct"<blob>="username"
+    "atyp"<blob>="form"
+    "cdat"<timedate>=0x323031038323731137335A00  "20140827181723Z\000"
+    "crtr"<uint32>="rimZ"
+    "cusi"<sint32>=<NULL>
+    "desc"<blob>=<NULL>
+    "icmt"<blob>=<NULL>
+    "invi"<sint32>=<NULL>
+    "mdat"<timedate>=0x3230310383238313745A00  "20140827181724Z\000"
+    "nega"<sint32>=<NULL>
+    "path"<blob>="/login"
+    "port"<uint32>=0x00000000
+    "prot"<blob>=<NULL>
+    "ptcl"<uint32>="htps"
+    "scrp"<sint32>=<NULL>
+    "sdmn"<blob>=<NULL>
+    "srvr"<blob>="mylogin.com"
+    "type"<uint32>=<NULL>
+keychain: "/Library/Keychains/login.keychain"
+version: 256
+class: "inet"
+attributes:
+    0x00000007 <blob>="mylogin.com"
+    0x00000008 <blob>=<NULL>
+    "acct"<blob>="username2"
+    "atyp"<blob>="form"
+    "cdat"<timedate>=0x323134313303133231385A00  "20141130190218Z\000"
+    "crtr"<uint32>="rimZ"
+    "cusi"<sint32>=<NULL>
+    "desc"<blob>=<NULL>
+    "icmt"<blob>=<NULL>
+    "invi"<sint32>=<NULL>
+    "mdat"<timedate>=0x323133133303303231385A00  "20141130190218Z\000"
+    "nega"<sint32>=<NULL>
+    "path"<blob>="/login"
+    "port"<uint32>=0x00000000
+    "prot"<blob>=<NULL>
+    "ptcl"<uint32>="htps"
+    "scrp"<sint32>=<NULL>
+    "sdmn"<blob>=<NULL>
+    "srvr"<blob>="mylogin.com"
+    "type"<uint32>=<NULL>
+keychain: "/Library/Keychains/login.keychain"
+version: 256
+class: "genp"
+attributes:
+    0x00000007 <blob>="my safe note"
+    0x00000008 <blob>=<NULL>
+    "acct"<blob>=<NULL>
+    "cdat"<timedate>=0x3230323137313835325A00  "20160217190852Z\000"
+    "crtr"<uint32>=<NULL>
+    "cusi"<sint32>=<NULL>
+    "desc"<blob>="secure note"
+    "gena"<blob>=<NULL>
+    "icmt"<blob>=<NULL>
+    "invi"<sint32>=<NULL>
+    "mdat"<timedate>=0x323063032313733835A00  "20160217190852Z\000"
+    "nega"<sint32>=<NULL>
+    "prot"<blob>=<NULL>
+    "scrp"<sint32>=<NULL>
+    "svce"<blob>="my safe note"
+    "type"<uint32>="note"
+
