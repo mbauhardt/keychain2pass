@@ -47,6 +47,12 @@ object KeychainParser {
         keychains(currentKeychain) = keychain.copy(entries = head.copy(kind = "Notes") :: tail)
       }
 
+      if (line.contains("class: \"inet\"")) {
+        val keychain = keychains.get(currentKeychain).get
+        val head = keychain.entries.head
+        val tail = keychain.entries.tail
+        keychains(currentKeychain) = keychain.copy(entries = head.copy(kind = "Websites") :: tail)
+      }
     }
     keychains.values.toSet
   }
