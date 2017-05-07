@@ -4,9 +4,9 @@ import java.util.Scanner
 
 case class Keychain(keychain: String, entries: List[KeychainEntry])
 
-case class KeychainEntry(kind: String, name: String)
+case class KeychainEntry(kind: String, name: String, account: Option[String])
 
-object UnknownEntry extends KeychainEntry("unknown-kind", "unknown-name")
+object UnknownEntry extends KeychainEntry("unknown-kind", "unknown-name", None)
 
 object KeychainParser {
 
@@ -52,6 +52,13 @@ object KeychainParser {
         val head = keychain.entries.head
         val tail = keychain.entries.tail
         keychains(currentKeychain) = keychain.copy(entries = head.copy(kind = "Websites") :: tail)
+      }
+
+      if (line.contains("\"acct\"<blob>=\"")) {
+        val keychain = keychains.get(currentKeychain).get
+        val head = keychain.entries.head
+        val tail = keychain.entries.tail
+        keychains(currentKeychain) = keychain.copy(entries = head.copy(account = Some(line.substring(line.indexOf("=\"") + 2, line.length - 1))) :: tail)
       }
     }
     keychains.values.toSet
