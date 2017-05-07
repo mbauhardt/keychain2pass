@@ -23,7 +23,16 @@ object KeychainParser {
         currentKeychain = line.substring(line.indexOf("\"") + 1, line.length - 1)
         val keychainEntry = UnknownEntry
         val keychain = keychains.getOrElse(currentKeychain, Keychain(currentKeychain, List.empty))
-        keychains(currentKeychain) = keychain.copy(entries = keychainEntry :: keychain.entries)
+
+        if (keychain.entries.isEmpty) {
+          keychains(currentKeychain) = keychain.copy(entries = List(keychainEntry))
+        } else {
+          if (keychain.entries.head.kind != UnknownEntry.kind) {
+            keychains(currentKeychain) = keychain.copy(entries = keychainEntry :: keychain.entries)
+          } else {
+            keychains(currentKeychain) = keychain.copy(entries = keychainEntry :: keychain.entries.tail)
+          }
+        }
       }
 
       if (line.contains("0x00000007 <blob>=")) {
