@@ -39,6 +39,14 @@ object KeychainParser {
         val tail = keychain.entries.tail
         keychains(currentKeychain) = keychain.copy(entries = head.copy(kind = "Apps") :: tail)
       }
+
+      if (line.contains("\"type\"<uint32>=\"note\"")) {
+        val keychain = keychains.get(currentKeychain).get
+        val head = keychain.entries.head
+        val tail = keychain.entries.tail
+        keychains(currentKeychain) = keychain.copy(entries = head.copy(kind = "Notes") :: tail)
+      }
+
     }
     keychains.values.toSet
   }
