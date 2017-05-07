@@ -6,7 +6,7 @@ case class Keychain(keychain: String, entries: List[KeychainEntry])
 
 case class KeychainEntry(kind: String, name: String)
 
-object UnknownEntry extends KeychainEntry("unknown-id", "unknown-name")
+object UnknownEntry extends KeychainEntry("unknown-kind", "unknown-name")
 
 object KeychainParser {
 
@@ -26,6 +26,12 @@ object KeychainParser {
         keychains(currentKeychain) = keychain.copy(entries = keychainEntry :: keychain.entries)
       }
 
+      if (line.contains("0x00000007 <blob>=")) {
+        val keychain = keychains.get(currentKeychain).get
+        val head = keychain.entries.head
+        val tail = keychain.entries.tail
+        keychains(currentKeychain) = keychain.copy(entries = head.copy(name = line.substring(line.indexOf("\"") + 1, line.length - 1)) :: tail)
+      }
     }
     keychains.values.toSet
   }
