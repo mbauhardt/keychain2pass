@@ -32,6 +32,13 @@ object KeychainParser {
         val tail = keychain.entries.tail
         keychains(currentKeychain) = keychain.copy(entries = head.copy(name = line.substring(line.indexOf("\"") + 1, line.length - 1)) :: tail)
       }
+
+      if (line.startsWith("class: \"genp\"")) {
+        val keychain = keychains.get(currentKeychain).get
+        val head = keychain.entries.head
+        val tail = keychain.entries.tail
+        keychains(currentKeychain) = keychain.copy(entries = head.copy(kind = "Apps") :: tail)
+      }
     }
     keychains.values.toSet
   }
