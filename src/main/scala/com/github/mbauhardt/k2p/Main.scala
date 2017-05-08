@@ -16,5 +16,7 @@ object Main {
     }
 
     val dump = Security.dumpKeychain()
+    val keychain = KeychainParser.parseKeychain(dump)
+    println(keychain)
   }
 }

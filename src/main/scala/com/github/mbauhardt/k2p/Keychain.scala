@@ -35,11 +35,20 @@ object KeychainParser {
         }
       }
 
+      // extract name from generic password and note
       if (line.contains("0x00000007 <blob>=")) {
         val keychain = keychains.get(currentKeychain).get
         val head = keychain.entries.head
         val tail = keychain.entries.tail
         keychains(currentKeychain) = keychain.copy(entries = head.copy(name = line.substring(line.indexOf("\"") + 1, line.length - 1)) :: tail)
+      }
+
+      // extract name from internet password
+      if (line.contains("\"srvr\"<blob>=\"")) {
+        val keychain = keychains.get(currentKeychain).get
+        val head = keychain.entries.head
+        val tail = keychain.entries.tail
+        keychains(currentKeychain) = keychain.copy(entries = head.copy(name = line.substring(line.indexOf("=\"") + 2, line.length - 1)) :: tail)
       }
 
       if (line.startsWith("class: \"genp\"")) {
