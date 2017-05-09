@@ -16,7 +16,8 @@ object Main {
     }
 
     val dump = Security.dumpKeychain()
-    val keychain = KeychainParser.parseKeychain(dump)
-    println(keychain)
+    val keychains: Set[Keychain] = KeychainParser.parseKeychain(dump)
+    val passwords = PassMigration.migrateApplicationPasswords(keychains, Security.findGenericPassword)
+    println(passwords)
   }
 }
