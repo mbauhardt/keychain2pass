@@ -114,4 +114,23 @@ attributes:
     "scrp"<sint32>=<NULL>
     "svce"<blob>="my safe note"
     "type"<uint32>="note"
-
+keychain: "/Library/Keychains/login.keychain"
+version: 256
+class: "genp"
+attributes:
+    0x00000007 <blob>="Screenhero"
+    0x00000008 <blob>=<NULL>
+    "acct"<blob>="username"
+    "cdat"<timedate>=0x323031343038303130335355A00  "20140801084355Z\000"
+    "crtr"<uint32>="aapl"
+    "cusi"<sint32>=<NULL>
+    "desc"<blob>=<NULL>
+    "gena"<blob>=<NULL>
+    "icmt"<blob>=<NULL>
+    "invi"<sint32>=<NULL>
+    "mdat"<timedate>=0x323031363034323530383375A00  "20160425082847Z\000"
+    "nega"<sint32>=<NULL>
+    "prot"<blob>=<NULL>
+    "scrp"<sint32>=<NULL>
+    "svce"<blob>="Screenhero"
+    "type"<uint32>=<NULL>
