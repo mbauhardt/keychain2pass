@@ -21,6 +21,14 @@ object Security {
     }
   }
 
+  def findWifiPassword(keychainEntry: KeychainEntry): Try[String] = {
+    if (keychainEntry.account.isDefined) {
+      findGenericPassword(keychainEntry.service, keychainEntry.account.get)
+    } else {
+      findGenericPassword(keychainEntry.service)
+    }
+  }
+
   val logger = ProcessLogger(line => ())
 
   def findInternetPassword(service: String): Try[String] = {

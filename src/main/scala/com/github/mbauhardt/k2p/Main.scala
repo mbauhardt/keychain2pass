@@ -19,7 +19,9 @@ object Main {
     val keychains: Set[Keychain] = KeychainParser.parseKeychain(dump)
     val appPasswords = PassMigration.migrateApplicationPasswords(keychains)
     val internetPasswords = PassMigration.migrateInternetPasswords(keychains)
+    val wifiPasswords = PassMigration.migrateWifiPasswords(keychains)
     println(appPasswords)
     println(internetPasswords)
+    println(wifiPasswords)
   }
 }
