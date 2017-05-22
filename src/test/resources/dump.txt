@@ -11,6 +11,8 @@ attributes:
     "skid"<blob>=0x88271A9B618608BECEBBAF64759CA3B7  "0'\027\011\251\266\030`\21353\272\366GY\305RT\243\267"
     "snbr"<blob>=0x01DCC439010  "\036\274\3049m\240\020"
     "subj"<blob>=0x30906035504061302555331133011060355040A0C0A4170706C6520496E632E312C3355040B0C234170706C6520576F726C647769646520446576656C6F7065722052656C6174696F6E733144304206035504030C3B4170706C6520576F726C64776960446576656C65722052656C6174696F6E7320436636174696F6E20417574686F779  "0\201\2261\0130\011\006\003U\004\006\023\002US1\6\003U\004\012\014\012Apple Inc.1,0*\006\003U\004\013\014#Apple Worldwide Developer Relations1D0B\006\003U\00014;Apple Worldwide Developer Relations Certification Authority"
+data:
+abc
 keychain: "/Library/Keychains/System.keychain"
 version: 256
 class: 0x80001000
@@ -26,6 +28,8 @@ attributes:
     "snbr"<blob>=0x2604B43F  "&\004\264?"
     "subj"<blob>=0x303C3120301E0636F6D2E6170706C652E73797374656D64656661756C7431183016060355040F53797374656D2049647
 97479  "0<1 0\036\006\003U\004\003\0com.apple.systemdefault1\0300\06\003U\\017System Identity"
+data:
+xyz
 keychain: "/Library/Keychains/System.keychain"
 version: 256
 class: "genp"
@@ -46,6 +50,8 @@ attributes:
     "scrp"<sint32>=<NULL>
     "svce"<blob>="AirPort"
     "type"<uint32>=<NULL>
+data:
+"wifi-password"
 keychain: "/Library/Keychains/login.keychain"
 version: 256
 class: "inet"
@@ -70,6 +76,8 @@ attributes:
     "sdmn"<blob>=<NULL>
     "srvr"<blob>="mylogin.com"
     "type"<uint32>=<NULL>
+data:
+0x70617373776f726431  "password1"
 keychain: "/Library/Keychains/login.keychain"
 version: 256
 class: "inet"
@@ -94,6 +102,8 @@ attributes:
     "sdmn"<blob>=<NULL>
     "srvr"<blob>="mylogin.com"
     "type"<uint32>=<NULL>
+data:
+"password2"
 keychain: "/Library/Keychains/login.keychain"
 version: 256
 class: "genp"
@@ -114,6 +124,8 @@ attributes:
     "scrp"<sint32>=<NULL>
     "svce"<blob>="my safe note"
     "type"<uint32>="note"
+data:
+0x3ABC  "<?xml version="1.0" encoding="UTF-8"?>\012<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\012<plist version="1.0">\012<dict>\012\011<key>NOTE</key>\012\011<string>hello world</string>\012\011<key>RTFD</key>\012\011<data>somedata</data>\012</dict>\012</plist>\012"
 keychain: "/Library/Keychains/login.keychain"
 version: 256
 class: "genp"
@@ -134,3 +146,5 @@ attributes:
     "scrp"<sint32>=<NULL>
     "svce"<blob>="Screenhero"
     "type"<uint32>=<NULL>
+data:
+"app-password"

@@ -6,52 +6,44 @@ import java.util.Scanner
 trait KeychainEntry {
   def kind: String
 
-  def service: String
-
   def name: String
 
   def account: Option[String]
+
+  def password: String
 }
 
 
 object EmptyEntry extends KeychainEntry {
   override def kind: String = ""
 
-  override def service: String = ""
-
   override def name = ""
 
   override def account: Option[String] = None
+
+  override def password = ""
 }
 
-case class SecureNoteEntry(service: String) extends KeychainEntry {
+case class SecureNoteEntry(name: String, password: String) extends KeychainEntry {
   override def kind = "Notes"
-
-  override def name = service
 
   override def account: Option[String] = None
 }
 
-case class WifiPasswordEntry(name: String, username: String) extends KeychainEntry {
+case class WifiPasswordEntry(name: String, username: String, password: String) extends KeychainEntry {
   override def kind = "Wifi"
 
-  override def service = "AirPort"
-
   override def account: Option[String] = Some(username)
 }
 
-case class ApplicationPasswordEntry(service: String, username: String) extends KeychainEntry {
+case class ApplicationPasswordEntry(name: String, username: String, password: String) extends KeychainEntry {
   override def kind = "Apps"
 
-  override def name = service
-
   override def account: Option[String] = Some(username)
 }
 
-case class InternetPasswordEntry(service: String, username: String) extends KeychainEntry {
+case class InternetPasswordEntry(name: String, username: String, password: String) extends KeychainEntry {
   override def kind = "Websites"
-
-  override def name = service
 
   override def account: Option[String] = Some(username)
 }
@@ -67,70 +59,102 @@ object KeychainParser {
     val keychains = scala.collection.mutable.LinkedHashMap.empty[String, Keychain]
 
     var currentKeychain: String = null
-    var currentName: String = null
-    var currentAccount: String = null
+    var wifiName: String = null
+    var userName: String = null
     while (scanner.hasNextLine) {
       val line = scanner.nextLine()
 
       if (line.startsWith("keychain: ")) {
         // reset var's
-        currentKeychain = line.substring(line.indexOf("\"") + 1, line.length - 1)
-        currentName = null
-        currentAccount = null
+        currentKeychain = stringBetweenDoubleQuotes(line)
+        wifiName = null
+        userName = null
 
         val emptyEntry = EmptyEntry
         val keychain = keychains.getOrElse(currentKeychain, Keychain(currentKeychain, List.empty))
 
-        if (keychain.entries.isEmpty) {
-          keychains(currentKeychain) = keychain.copy(entries = List(emptyEntry))
-        } else {
-          if (keychain.entries.head != EmptyEntry) {
-            keychains(currentKeychain) = keychain.copy(entries = emptyEntry :: keychain.entries)
+        keychains(currentKeychain) =
+          if (keychain.entries.isEmpty) {
+            keychain.copy(entries = List(emptyEntry))
           } else {
-            keychains(currentKeychain) = keychain.copy(entries = emptyEntry :: keychain.entries.tail)
+            if (keychain.entries.head != EmptyEntry) {
+              keychain.copy(entries = emptyEntry :: keychain.entries)
+            } else {
+              keychain.copy(entries = emptyEntry :: keychain.entries.tail)
+            }
           }
-        }
       }
 
       // we take the blob as name only for wifi passwords
       if (line.contains("0x00000007 <blob>=\"")) {
-        currentName = line.substring(line.indexOf("=\"") + 2, line.length - 1)
+        wifiName = stringBetweenEqualSignAndDoubleQuotes(line)
       }
 
       // user name for wifi or app
       if (line.contains("\"acct\"<blob>=\"")) {
-        currentAccount = line.substring(line.indexOf("=\"") + 2, line.length - 1)
+        userName = stringBetweenEqualSignAndDoubleQuotes(line)
       }
 
       // app or wifi
       if (line.contains("\"svce\"<blob>=\"")) {
         val keychain = keychains.get(currentKeychain).get
-        val head = keychain.entries.head
         val tail = keychain.entries.tail
-        val service = line.substring(line.indexOf("=\"") + 2, line.length - 1)
-        if (service == "AirPort") {
-          keychains(currentKeychain) = keychain.copy(entries = WifiPasswordEntry(name = currentName, Option(currentAccount).getOrElse("username not found")) :: tail)
-        } else {
-          keychains(currentKeychain) = keychain.copy(entries = ApplicationPasswordEntry(service = service, Option(currentAccount).getOrElse("username not found")) :: tail)
-        }
+        val name = stringBetweenEqualSignAndDoubleQuotes(line)
+        keychains(currentKeychain) =
+          if (name == "AirPort") {
+            keychain.copy(entries = WifiPasswordEntry(name = wifiName, Option(userName).getOrElse("username not found"), "password not found") :: tail)
+          } else {
+            keychain.copy(entries = ApplicationPasswordEntry(name = name, Option(userName).getOrElse("username not found"), "password not found") :: tail)
+          }
       }
 
       // internet password
       if (line.contains("\"srvr\"<blob>=\"")) {
         val keychain = keychains.get(currentKeychain).get
-        val head = keychain.entries.head
         val tail = keychain.entries.tail
-        keychains(currentKeychain) = keychain.copy(entries = InternetPasswordEntry(service = line.substring(line.indexOf("=\"") + 2, line.length - 1), Option(currentAccount).getOrElse("username not found"))  :: tail)
+        keychains(currentKeychain) = keychain.copy(entries = InternetPasswordEntry(name = stringBetweenEqualSignAndDoubleQuotes(line), Option(userName).getOrElse("username not found"), "password not found") :: tail)
       }
 
-      // safe note
+      // replace application password entry with secure note entry
       if (line.contains("\"type\"<uint32>=\"note\"")) {
         val keychain = keychains.get(currentKeychain).get
         val head = keychain.entries.head
         val tail = keychain.entries.tail
-        keychains(currentKeychain) = keychain.copy(entries = SecureNoteEntry(head.service) :: tail)
+        keychains(currentKeychain) = keychain.copy(entries = SecureNoteEntry(head.name, "password not found") :: tail)
+      }
+
+      // parse password out of data
+      if (line.startsWith("data")) {
+        val pwd = scanner.nextLine()
+        val keychain = keychains.get(currentKeychain).get
+        val head = keychain.entries.head
+        val tail = keychain.entries.tail
+        val finalHead: KeychainEntry = head match {
+          case internet: InternetPasswordEntry => internet.copy(password = stringBetweenDoubleQuotes(pwd))
+          case app: ApplicationPasswordEntry => app.copy(password = stringBetweenDoubleQuotes(pwd))
+          case wifi: WifiPasswordEntry => wifi.copy(password = stringBetweenDoubleQuotes(pwd))
+          case note: SecureNoteEntry => {
+            val i = pwd.indexOf("<string>")
+            val j = pwd.indexOf("</string>")
+            if (i > -1 && j > -1) {
+              note.copy(password = pwd.substring(i + 8, j))
+            } else {
+              note.copy(password = stringBetweenDoubleQuotes(pwd))
+            }
+          }
+          case other: KeychainEntry => other
+        }
+        keychains(currentKeychain) = keychain.copy(entries = finalHead :: tail)
       }
     }
     keychains.values.toSet
+  }
+
+  private def stringBetweenEqualSignAndDoubleQuotes(s: String) = {
+    s.substring(s.indexOf("=\"") + 2, s.length - 1)
+  }
+
+  private def stringBetweenDoubleQuotes(s: String) = {
+    s.substring(s.indexOf("\"") + 1, s.length - 1)
   }
 }
