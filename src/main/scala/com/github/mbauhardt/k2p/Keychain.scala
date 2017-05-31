@@ -65,11 +65,24 @@ object KeychainParser {
       val line = scanner.nextLine()
 
       if (line.startsWith("keychain: ")) {
-
         // reset var's
         currentKeychain = stringBetweenDoubleQuotes(line)
         wifiName = null
         userName = null
+
+        val emptyEntry = EmptyEntry
+        val keychain = keychains.getOrElse(currentKeychain, Keychain(currentKeychain, List.empty))
+
+        keychains(currentKeychain) =
+          if (keychain.entries.isEmpty) {
+            keychain.copy(entries = List(emptyEntry))
+          } else {
+            if (keychain.entries.head != EmptyEntry) {
+              keychain.copy(entries = emptyEntry :: keychain.entries)
+            } else {
+              keychain.copy(entries = emptyEntry :: keychain.entries.tail)
+            }
+          }
       }
 
       // we take the blob as name only for wifi passwords
@@ -84,30 +97,27 @@ object KeychainParser {
 
       // app or wifi
       if (line.contains("\"svce\"<blob>=\"")) {
-        val keychain = keychains.getOrElseUpdate(currentKeychain, Keychain(currentKeychain, List(EmptyEntry)))
-        val head = keychain.entries.head
+        val keychain = keychains.get(currentKeychain).get
         val tail = keychain.entries.tail
         val name = stringBetweenEqualSignAndDoubleQuotes(line)
         keychains(currentKeychain) =
           if (name == "AirPort") {
-            keychain.copy(entries = WifiPasswordEntry(name = wifiName, Option(userName).getOrElse("username not found"), "password not found") :: head :: tail)
+            keychain.copy(entries = WifiPasswordEntry(name = wifiName, Option(userName).getOrElse("username not found"), "password not found") :: tail)
           } else {
-            keychain.copy(entries = ApplicationPasswordEntry(name = name, Option(userName).getOrElse("username not found"), "password not found") :: head :: tail)
+            keychain.copy(entries = ApplicationPasswordEntry(name = name, Option(userName).getOrElse("username not found"), "password not found") :: tail)
           }
       }
 
       // internet password
       if (line.contains("\"srvr\"<blob>=\"")) {
-        val keychain = keychains.getOrElseUpdate(currentKeychain, Keychain(currentKeychain, List(EmptyEntry)))
-        val head = keychain.entries.head
+        val keychain = keychains.get(currentKeychain).get
         val tail = keychain.entries.tail
-        val name = stringBetweenEqualSignAndDoubleQuotes(line)
-        keychains(currentKeychain) = keychain.copy(entries = InternetPasswordEntry(name, Option(userName).getOrElse("username not found"), "password not found") :: head :: tail)
+        keychains(currentKeychain) = keychain.copy(entries = InternetPasswordEntry(name = stringBetweenEqualSignAndDoubleQuotes(line), Option(userName).getOrElse("username not found"), "password not found") :: tail)
       }
 
       // replace application password entry with secure note entry
       if (line.contains("\"type\"<uint32>=\"note\"")) {
-        val keychain = keychains.getOrElseUpdate(currentKeychain, Keychain(currentKeychain, List(EmptyEntry)))
+        val keychain = keychains.get(currentKeychain).get
         val head = keychain.entries.head
         val tail = keychain.entries.tail
         keychains(currentKeychain) = keychain.copy(entries = SecureNoteEntry(head.name, "password not found") :: tail)
@@ -116,7 +126,7 @@ object KeychainParser {
       // parse password out of data
       if (line.startsWith("data")) {
         val pwd = scanner.nextLine()
-        val keychain = keychains.getOrElseUpdate(currentKeychain, Keychain(currentKeychain, List(EmptyEntry)))
+        val keychain = keychains.get(currentKeychain).get
         val head = keychain.entries.head
         val tail = keychain.entries.tail
         val finalHead: KeychainEntry = head match {
@@ -137,9 +147,7 @@ object KeychainParser {
         keychains(currentKeychain) = keychain.copy(entries = finalHead :: tail)
       }
     }
-
-    val res = for (key <- keychains.keys; nonEmpty = keychains(key).entries.filter(kc => kc != EmptyEntry)) yield Keychain(key, nonEmpty)
-    res.toSet
+    keychains.values.toSet
   }
 
   private def stringBetweenEqualSignAndDoubleQuotes(s: String) = {
