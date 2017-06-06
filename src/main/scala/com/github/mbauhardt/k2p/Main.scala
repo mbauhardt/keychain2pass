@@ -17,6 +17,16 @@ object Main {
 
     val dump = Security.dumpKeychain()
     val keychains: Set[Keychain] = KeychainParser.parseKeychain(dump)
-    println(keychains)
+    /** val keychain = Keychain("/Users/mb/Library/Keychains/login.keychain", List(
+      * InternetPasswordEntry("google.com", "user", "pwd"),
+      * ApplicationPasswordEntry("skype", "user", "pwd"),
+      * SecureNoteEntry("my notes", "text"),
+      * WifiPasswordEntry("network.lan", "user", "pwd"),
+      * EmptyEntry))
+      */
+    for (keychain <- keychains) {
+      Pass.insert(keychain)
+    }
+
   }
 }
