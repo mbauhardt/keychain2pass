@@ -134,12 +134,13 @@ object KeychainParser {
           case app: ApplicationPasswordEntry => app.copy(password = stringBetweenDoubleQuotes(pwd))
           case wifi: WifiPasswordEntry => wifi.copy(password = stringBetweenDoubleQuotes(pwd))
           case note: SecureNoteEntry => {
-            val i = pwd.indexOf("<string>")
-            val j = pwd.indexOf("</string>")
+            val encodedString = parseHexString(pwd)
+            val i = encodedString.indexOf("<string>")
+            val j = encodedString.indexOf("</string>")
             if (i > -1 && j > -1) {
-              note.copy(password = pwd.substring(i + 8, j))
+              note.copy(password = encodedString.substring(i + 8, j))
             } else {
-              note.copy(password = stringBetweenDoubleQuotes(pwd))
+              note.copy(password = stringBetweenDoubleQuotes(encodedString))
             }
           }
           case other: KeychainEntry => other
@@ -148,6 +149,18 @@ object KeychainParser {
       }
     }
     keychains.values.toSet
+  }
+
+  private def parseHexString(pwd: String) = {
+    val substring = pwd.substring(2)
+    val space = substring.indexOf(" ")
+    val hex = substring.substring(0, space)
+    val sb = new StringBuilder
+    for (i <- 0 until hex.size by 2) {
+      val str = hex.substring(i, i + 2)
+      sb.append(Integer.parseInt(str, 16).toChar)
+    }
+    sb.toString()
   }
 
   private def stringBetweenEqualSignAndDoubleQuotes(s: String) = {
