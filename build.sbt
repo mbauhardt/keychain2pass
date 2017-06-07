@@ -10,4 +10,7 @@ oneJarSettings
 
 libraryDependencies += "org.scalactic" %% "scalactic" % "3.0.1"
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.1" % "test"
-libraryDependencies += "com.lexicalscope.jewelcli" % "jewelcli" % "0.8.9"
+
+mappings in (Compile, packageBin) += {
+  (baseDirectory.value / "LICENSE" ) -> "LICENSE"
+}
