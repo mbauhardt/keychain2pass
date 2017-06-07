@@ -24,6 +24,7 @@ object Main {
       * WifiPasswordEntry("network.lan", "user", "pwd"),
       * EmptyEntry))
       */
+    //println(keychains)
     for (keychain <- keychains) {
       Pass.insert(keychain)
     }

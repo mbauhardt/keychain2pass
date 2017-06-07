@@ -66,7 +66,7 @@ object KeychainParser {
 
       if (line.startsWith("keychain: ")) {
         // reset var's
-        currentKeychain = stringBetweenDoubleQuotes(line)
+        currentKeychain = stringBetweenDoubleQuotes(line).getOrElse("unknown.keychain")
         wifiName = null
         userName = null
 
@@ -130,9 +130,9 @@ object KeychainParser {
         val head = keychain.entries.head
         val tail = keychain.entries.tail
         val finalHead: KeychainEntry = head match {
-          case internet: InternetPasswordEntry => internet.copy(password = stringBetweenDoubleQuotes(pwd))
-          case app: ApplicationPasswordEntry => app.copy(password = stringBetweenDoubleQuotes(pwd))
-          case wifi: WifiPasswordEntry => wifi.copy(password = stringBetweenDoubleQuotes(pwd))
+          case internet: InternetPasswordEntry => internet.copy(password = stringBetweenDoubleQuotes(pwd).getOrElse(""))
+          case app: ApplicationPasswordEntry => app.copy(password = stringBetweenDoubleQuotes(pwd).getOrElse(""))
+          case wifi: WifiPasswordEntry => wifi.copy(password = stringBetweenDoubleQuotes(pwd).getOrElse(""))
           case note: SecureNoteEntry => {
             val encodedString = parseHexString(pwd)
             val i = encodedString.indexOf("<string>")
@@ -140,7 +140,7 @@ object KeychainParser {
             if (i > -1 && j > -1) {
               note.copy(password = encodedString.substring(i + 8, j))
             } else {
-              note.copy(password = stringBetweenDoubleQuotes(encodedString))
+              note.copy(password = stringBetweenDoubleQuotes(encodedString).getOrElse(""))
             }
           }
           case other: KeychainEntry => other
@@ -168,6 +168,9 @@ object KeychainParser {
   }
 
   private def stringBetweenDoubleQuotes(s: String) = {
-    s.substring(s.indexOf("\"") + 1, s.length - 1)
+    val i = s.indexOf("\"")
+    val j = s.lastIndexOf("\"")
+    if (i > -1 && j > -1) Option(s.substring(i + 1, j))
+    else None
   }
 }
