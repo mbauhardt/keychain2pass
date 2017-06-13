@@ -11,8 +11,15 @@ case class PasswordStoreEntry(path: String, username: Option[String], password: 
 object Pass {
 
   def insert(keychain: Keychain) = {
+    println
+    println
+    println(s"Migrate keychain ${keychain.keychain}")
+    println("======================================")
     val log = ProcessLogger.apply(new File("keychain2pass.log"))
+    val size = keychain.entries.size
+    var counter = 0
     keychain.entries.foreach(keychainEntry => {
+      counter = counter + 1
       val status = keychainEntry match {
         case internet: InternetPasswordEntry => insertInet(keychain, keychainEntry, log)
         case app: ApplicationPasswordEntry => insertApp(keychain, keychainEntry, log)
@@ -20,10 +27,11 @@ object Pass {
         case wifi: WifiPasswordEntry => insertWifi(keychain, keychainEntry, log)
         case other: KeychainEntry =>
       }
+      val percentage = counter * 100 / size
       if (status == 0) {
-        println(s"Successfully added '${keychainEntry.name}' to pass folder '${keychain.keychain}'")
+        println(s"[$percentage%] Successfully added '${keychainEntry.name}' to pass folder '${keychain.keychain}'")
       } else {
-        println(s"Failed to add '${keychainEntry.name}' to pass folder '${keychain.keychain}'")
+        println(s"[$percentage%] Failed to add '${keychainEntry.name}' to pass folder '${keychain.keychain}'")
       }
     }
     )
