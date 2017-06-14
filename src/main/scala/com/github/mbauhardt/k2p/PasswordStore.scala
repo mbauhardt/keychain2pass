@@ -10,6 +10,30 @@ case class PasswordStoreEntry(path: String, username: Option[String], password: 
 
 object Pass {
 
+  def makeEntriesUnique(entries: List[KeychainEntry]) = {
+    def makeEntriesUnique(entries: List[KeychainEntry], acc: List[KeychainEntry]): List[KeychainEntry] = {
+      entries match {
+        case Nil => acc
+        case h :: t => {
+          val count = t.count(ke => ke.name == h.name)
+          if (count == 0) {
+            makeEntriesUnique(t, h :: acc)
+          } else {
+            val x = h match {
+              case internet: InternetPasswordEntry => internet.asInstanceOf[InternetPasswordEntry].copy(name = s"${h.name}($count)")
+              case app: ApplicationPasswordEntry => app.asInstanceOf[ApplicationPasswordEntry].copy(name = s"${h.name}($count)")
+              case note: SecureNoteEntry => note.asInstanceOf[SecureNoteEntry].copy(name = s"${h.name}($count)")
+              case wifi: WifiPasswordEntry => wifi.asInstanceOf[WifiPasswordEntry].copy(name = s"${h.name}($count)")
+              case other: KeychainEntry => h
+            }
+            makeEntriesUnique(t, x :: acc)
+          }
+        }
+      }
+    }
+    makeEntriesUnique(entries, List.empty)
+  }
+
   def insert(keychain: Keychain) = {
     println
     println
@@ -18,13 +42,14 @@ object Pass {
     val log = ProcessLogger.apply(new File("keychain2pass.log"))
     val size = keychain.entries.size
     var counter = 0
-    keychain.entries.foreach(keychainEntry => {
+    val uniqueEntries = makeEntriesUnique(keychain.entries)
+    uniqueEntries.foreach(keychainEntry => {
       counter = counter + 1
       val status = keychainEntry match {
         case internet: InternetPasswordEntry => insertInet(keychain, keychainEntry, log)
         case app: ApplicationPasswordEntry => insertApp(keychain, keychainEntry, log)
         case note: SecureNoteEntry => insertNote(keychain, keychainEntry, log)
-        case wifi: WifiPasswordEntry => insertWifi(keychain, keychainEntry, log)
+        case wifi: WifiPasswordEntry => insertWifi(keychain, keychainEntry.asInstanceOf[WifiPasswordEntry], log)
         case other: KeychainEntry =>
       }
       val percentage = counter * 100 / size
@@ -39,7 +64,7 @@ object Pass {
   }
 
 
-  private def insertWifi(keychain: Keychain, keychainEntry: KeychainEntry, log: FileProcessLogger) = {
+  private def insertWifi(keychain: Keychain, keychainEntry: WifiPasswordEntry, log: FileProcessLogger) = {
     val pwd = keychainEntry.password
     val name = keychainEntry.name
     val account = keychainEntry.account.get
