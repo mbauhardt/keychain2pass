@@ -2,7 +2,7 @@ package com.github.mbauhardt.k2p
 
 import java.io.{ByteArrayInputStream, File}
 
-import scala.sys.process.{FileProcessLogger, Process, ProcessLogger}
+import scala.sys.process.{Process, ProcessLogger}
 
 case class PasswordStore(entries: Set[PasswordStoreEntry])
 
@@ -31,6 +31,7 @@ object Pass {
         }
       }
     }
+
     makeEntriesUnique(entries, List.empty)
   }
 
@@ -38,25 +39,28 @@ object Pass {
     println
     println
     println(s"Migrate keychain ${keychain.keychain}")
-    println("======================================")
+    println("===========================================================================================================")
     val log = ProcessLogger.apply(new File("keychain2pass.log"))
-    val size = keychain.entries.size
+    val nonEmptyEntries = keychain.entries.filter(ke => ke != EmptyEntry)
+    val size = nonEmptyEntries.size
     var counter = 0
-    val uniqueEntries = makeEntriesUnique(keychain.entries)
+    val uniqueEntries = makeEntriesUnique(nonEmptyEntries)
     uniqueEntries.foreach(keychainEntry => {
       counter = counter + 1
-      val status = keychainEntry match {
-        case internet: InternetPasswordEntry => insertInet(keychain, keychainEntry, log)
-        case app: ApplicationPasswordEntry => insertApp(keychain, keychainEntry, log)
-        case note: SecureNoteEntry => insertNote(keychain, keychainEntry, log)
-        case wifi: WifiPasswordEntry => insertWifi(keychain, keychainEntry.asInstanceOf[WifiPasswordEntry], log)
-        case other: KeychainEntry =>
+      val command = keychainEntry match {
+        case internet: InternetPasswordEntry => insertInetCommandArgs(keychain, keychainEntry)
+        case app: ApplicationPasswordEntry => insertAppCommandArgs(keychain, keychainEntry)
+        case note: SecureNoteEntry => insertNoteCommandArgs(keychain, keychainEntry)
+        case wifi: WifiPasswordEntry => insertWifiCommandArgs(keychain, keychainEntry.asInstanceOf[WifiPasswordEntry])
       }
+
+      val status = Process(s"pass insert ${command._1} -m").#<(command._2).!(log)
       val percentage = counter * 100 / size
       if (status == 0) {
-        println(s"[$percentage%] Successfully added '${keychainEntry.name}' to pass folder '${keychain.keychain}'")
+        //printf("[%d]   Successfully added %-30s to pass folder \t%s\r\n", percentage, "'" + keychainEntry.name + "'", "'" + command._1 + "'")
+        println(s"[$percentage%] Successfully added '${keychainEntry.name}' to pass folder '${command._1}'")
       } else {
-        println(s"[$percentage%] Failed to add '${keychainEntry.name}' to pass folder '${keychain.keychain}'")
+        println(s"[$percentage%] Failed to add '${keychainEntry.name}' \t\t\tto pass folder '${command._1}'")
       }
     }
     )
@@ -64,47 +68,39 @@ object Pass {
   }
 
 
-  private def insertWifi(keychain: Keychain, keychainEntry: WifiPasswordEntry, log: FileProcessLogger) = {
+  private def insertWifiCommandArgs(keychain: Keychain, keychainEntry: WifiPasswordEntry) = {
     val pwd = keychainEntry.password
     val name = keychainEntry.name
     val account = keychainEntry.account.get
     var pwdInput = new ByteArrayInputStream(s"$pwd\r\nlogin: $account\r\n".getBytes())
     val nameOfKeychain = keychain.keychain
-    val output = Process(s"pass insert $nameOfKeychain/Wifi/${name.replace(" ", "-")} -m").#<(pwdInput).!(log)
-    log.flush()
-    output
+    (s"$nameOfKeychain/Wifi/${name.replace(" ", "-")}", pwdInput)
   }
 
-  private def insertNote(keychain: Keychain, keychainEntry: KeychainEntry, log: FileProcessLogger) = {
+  private def insertNoteCommandArgs(keychain: Keychain, keychainEntry: KeychainEntry) = {
     val pwd = keychainEntry.password
     val name = keychainEntry.name
     var pwdInput = new ByteArrayInputStream(s"$pwd\r\n".getBytes())
     val nameOfKeychain = keychain.keychain
-    val output = Process(s"pass insert $nameOfKeychain/Notes/${name.replace(" ", "-")} -m").#<(pwdInput).!(log)
-    log.flush()
-    output
+    (s"$nameOfKeychain/Notes/${name.replace(" ", "-")}", pwdInput)
   }
 
-  private def insertApp(keychain: Keychain, keychainEntry: KeychainEntry, log: FileProcessLogger) = {
+  private def insertAppCommandArgs(keychain: Keychain, keychainEntry: KeychainEntry) = {
     val pwd = keychainEntry.password
     val name = keychainEntry.name
     val account = keychainEntry.account.get
     var pwdInput = new ByteArrayInputStream(s"$pwd\r\nlogin: $account\r\n".getBytes())
     val nameOfKeychain = keychain.keychain
-    val output = Process(s"pass insert $nameOfKeychain/Apps/${name.replace(" ", "-")} -m").#<(pwdInput).!(log)
-    log.flush()
-    output
+    (s"$nameOfKeychain/Apps/${name.replace(" ", "-")}", pwdInput)
   }
 
-  private def insertInet(keychain: Keychain, keychainEntry: KeychainEntry, log: FileProcessLogger) = {
+  private def insertInetCommandArgs(keychain: Keychain, keychainEntry: KeychainEntry) = {
     val pwd = keychainEntry.password
     val name = keychainEntry.name
     val account = keychainEntry.account.get
     var pwdInput = new ByteArrayInputStream(s"$pwd\r\nlogin: $account\r\n".getBytes())
     val nameOfKeychain = keychain.keychain
-    val output = Process(s"pass insert $nameOfKeychain/Websites/${name.replace(" ", "-")} -m").#<(pwdInput).!(log)
-    log.flush()
-    output
+    (s"$nameOfKeychain/Websites/${name.replace(" ", "-")}", pwdInput)
   }
 }
 
