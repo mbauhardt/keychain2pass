@@ -125,22 +125,22 @@ object KeychainParser {
 
       // parse password out of data
       if (line.startsWith("data")) {
-        val pwd = scanner.nextLine()
+        val line = scanner.nextLine()
+        val pwd: String = if (line.startsWith("0x")) parseHexString(line) else stringBetweenDoubleQuotes(line).getOrElse("")
         val keychain = keychains.get(currentKeychain).get
         val head = keychain.entries.head
         val tail = keychain.entries.tail
         val finalHead: KeychainEntry = head match {
-          case internet: InternetPasswordEntry => internet.copy(password = stringBetweenDoubleQuotes(pwd).getOrElse(""))
-          case app: ApplicationPasswordEntry => app.copy(password = stringBetweenDoubleQuotes(pwd).getOrElse(""))
-          case wifi: WifiPasswordEntry => wifi.copy(password = stringBetweenDoubleQuotes(pwd).getOrElse(""))
+          case internet: InternetPasswordEntry => internet.copy(password = pwd)
+          case app: ApplicationPasswordEntry => app.copy(password = pwd)
+          case wifi: WifiPasswordEntry => wifi.copy(password = pwd)
           case note: SecureNoteEntry => {
-            val encodedString = parseHexString(pwd)
-            val i = encodedString.indexOf("<string>")
-            val j = encodedString.indexOf("</string>")
+            val i = pwd.indexOf("<string>")
+            val j = pwd.indexOf("</string>")
             if (i > -1 && j > -1) {
-              note.copy(password = encodedString.substring(i + 8, j))
+              note.copy(password = pwd.substring(i + 8, j))
             } else {
-              note.copy(password = stringBetweenDoubleQuotes(encodedString).getOrElse(""))
+              note.copy(password = pwd)
             }
           }
           case other: KeychainEntry => other
@@ -160,6 +160,8 @@ object KeychainParser {
       val str = hex.substring(i, i + 2)
       sb.append(Integer.parseInt(str, 16).toChar)
     }
+    println(sb.toString())
+    //    new String(sb.toString().getBytes("ISO-8859-1"))
     sb.toString()
   }
 
