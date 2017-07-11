@@ -12,10 +12,13 @@ object Main {
     require(option == "-enc", "Usage: main -enc <ENCODING>")
     require(Charset.isSupported(enc), s"charset $enc not supported")
 
-    val dump = Security.dumpKeychain()
-    val keychains: Set[Keychain] = KeychainParser.parseKeychain(dump, enc)
+    val keychains = Security.listKeychains()
     for (keychain <- keychains) {
-      Pass.insert(keychain)
+      val dump = Security.dumpKeychain(keychain)
+      val parsedKeychains: Set[Keychain] = KeychainParser.parseKeychain(dump, enc)
+      for (parsedKeychain <- parsedKeychains) {
+        Pass.insert(parsedKeychain)
+      }
     }
   }
 }

@@ -4,7 +4,13 @@ import scala.sys.process.Process
 
 object Security {
 
-  def dumpKeychain(): String = {
-    Process("security dump-keychain -d").!!
+  def listKeychains() = {
+    val keychains = Process("security list-keychains").!!
+    val strings = keychains.split("\"").filter(s => !s.trim.isEmpty)
+    strings.toList
+  }
+
+  def dumpKeychain(keychain: String): String = {
+    Process(s"security dump-keychain -d $keychain").!!
   }
 }

@@ -125,7 +125,7 @@ attributes:
     "svce"<blob>="my safe note"
     "type"<uint32>="note"
 data:
-0x3ABC  "<?xml version="1.0" encoding="UTF-8"?>\012<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\012<plist version="1.0">\012<dict>\012\011<key>NOTE</key>\012\011<string>hello world</string>\012\011<key>RTFD</key>\012\011<data>somedata</data>\012</dict>\012</plist>\012"
+0x68656c6c6f20776f726c64 "<?xml version="1.0" encoding="UTF-8"?>\012<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\012<plist version="1.0">\012<dict>\012\011<key>NOTE</key>\012\011<string>hello world</string>\012\011<key>RTFD</key>\012\011<data>somedata</data>\012</dict>\012</plist>\012"
 keychain: "/Library/Keychains/login.keychain"
 version: 256
 class: "genp"
