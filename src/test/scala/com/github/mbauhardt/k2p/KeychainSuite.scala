@@ -8,7 +8,7 @@ class KeychainSuite extends FunSuite {
     val resourceFolder = getClass.getClassLoader.getResource("dump.txt").getFile
     val source = scala.io.Source.fromFile(resourceFolder)
     val lines = try source.mkString finally source.close()
-    val keychain = KeychainParser.parseKeychain(lines)
+    val keychain = KeychainParser.parseKeychain(lines, "UTF-8")
     assert(keychain.size === 2)
     assert(keychain.head.keychain === "/Library/Keychains/System.keychain")
     assert(keychain.head.entries.length === 1)

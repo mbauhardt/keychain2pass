@@ -52,7 +52,7 @@ case class Keychain(keychain: String, entries: List[KeychainEntry])
 
 object KeychainParser {
 
-  def parseKeychain(dump: String): Set[Keychain] = {
+  def parseKeychain(dump: String, enc: String): Set[Keychain] = {
 
     val scanner = new Scanner(dump)
 
@@ -126,7 +126,7 @@ object KeychainParser {
       // parse password out of data
       if (line.startsWith("data")) {
         val line = scanner.nextLine()
-        val pwd: String = if (line.startsWith("0x")) parseHexString(line) else stringBetweenDoubleQuotes(line).getOrElse("")
+        val pwd: String = if (line.startsWith("0x")) parseHexString(line, enc) else stringBetweenDoubleQuotes(line).getOrElse("")
         val keychain = keychains.get(currentKeychain).get
         val head = keychain.entries.head
         val tail = keychain.entries.tail
@@ -151,7 +151,7 @@ object KeychainParser {
     keychains.values.toSet
   }
 
-  private def parseHexString(pwd: String) = {
+  private def parseHexString(pwd: String, enc: String) = {
     val substring = pwd.substring(2)
     val space = substring.indexOf(" ")
     val hex = substring.substring(0, space)
@@ -160,9 +160,7 @@ object KeychainParser {
       val str = hex.substring(i, i + 2)
       sb.append(Integer.parseInt(str, 16).toChar)
     }
-    println(sb.toString())
-    //    new String(sb.toString().getBytes("ISO-8859-1"))
-    sb.toString()
+    new String(sb.toString().getBytes(enc))
   }
 
   private def stringBetweenEqualSignAndDoubleQuotes(s: String) = {
