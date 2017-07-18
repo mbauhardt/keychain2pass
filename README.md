@@ -94,7 +94,7 @@ You can copy the username via command line e.g.
      pass Users/marko/Library/Keychains/login.keychain/Websites/github.com | grep login | awk '{print $2}' | pbcopy
 
 
-#### Tested With
+### Tested With
 
 This tool was tested with
 
