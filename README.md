@@ -93,4 +93,22 @@ You can copy the username via command line e.g.
 
      pass Users/marko/Library/Keychains/login.keychain/Websites/github.com | grep login | awk '{print $2}' | pbcopy
 
- 
+
+#### Tested With
+
+This tool was tested with
+
+    [Tue 18, 20:35] 0 % java -version                                                                                      
+    java version "1.8.0_77"
+    Java(TM) SE Runtime Environment (build 1.8.0_77-b03)
+    Java HotSpot(TM) 64-Bit Server VM (build 25.77-b03, mixed mode)
+
+    [Tue 18, 20:37] 1 % scala -version
+    Scala code runner version 2.12.2 -- Copyright 2002-2017, LAMP/EPFL and Lightbend, Inc.
+
+    [Tue 18, 20:37] 0 % sw_vers       
+    ProductName:    Mac OS X
+    ProductVersion: 10.11.6
+    BuildVersion:   15G31
+    
+    
